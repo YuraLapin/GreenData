@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>GoogleDiskGreenDataIntegration</artifactId>
+	<artifactId>GreenData</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GoogleDiskGreenDataIntegration</name>
+	<name>GreenData</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>23</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
