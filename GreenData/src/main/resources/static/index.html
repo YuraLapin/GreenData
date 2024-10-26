@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+</head>
+<body>
+<h1>HELLO</h1>
+<button id="pickerButton">Выбрать файл из Google Drive</button>
+</body>
+</html>
+
+<script>
+    let tokenClient;
+    let accessToken = null;
+    let pickerInited = false;
+    let gisInited = false;
+
+    // Use the API Loader script to load google.picker
+    function onApiLoad() {
+      gapi.load('picker', onPickerApiLoad);
+    }
+
+    function onPickerApiLoad() {
+      pickerInited = true;
+    }
+
+    function gisLoaded() {
+      // TODO(developer): Replace with your client ID and required scopes.
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: '179631362261-rn1319ooavjli6kmp5ak5ilc49n8q8ps.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/drive.file',
+        callback: '', // defined later
+      });
+      gisInited = true;
+  }
+    // Create and render a Google Picker object for selecting from Drive.
+    function createPicker() {
+      const showPicker = () => {
+        // TODO(developer): Replace with your API key
+        const picker = new google.picker.PickerBuilder()
+            .addView(google.picker.ViewId.DOCS)
+            .setOAuthToken(accessToken)
+            .setDeveloperKey('AIzaSyAQZNF6x00haAFj5hWt9KU5SuZeKTl29kk')
+            .setCallback(pickerCallback)
+            .setAppId(gifted-honor-439717-s7)
+            .build();
+        picker.setVisible(true);
+      }
+
+      // Request an access token.
+      tokenClient.callback = async (response) => {
+        if (response.error !== undefined) {
+          throw (response);
+        }
+        accessToken = response.access_token;
+        showPicker();
+      };
+
+      if (accessToken === null) {
+        // Prompt the user to select a Google Account and ask for consent to share their data
+        // when establishing a new session.
+        tokenClient.requestAccessToken({prompt: 'consent'});
+      } else {
+        // Skip display of account chooser and consent dialog for an existing session.
+        tokenClient.requestAccessToken({prompt: ''});
+      }
+    }
+
+    document.getElementById('pickerButton').addEventListener('click', function() {
+            createPicker();
+        });
+</script>
+<!-- Load the Google API Loader script. -->
+<script async defer src="https://apis.google.com/js/api.js" onload="onApiLoad()"></script>
+<script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
