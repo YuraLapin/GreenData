@@ -1,5 +1,5 @@
 import React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import credentials from "../credentials.js"
 
 
@@ -34,12 +34,12 @@ export default function GoogleUploadButton() {
         }
     }, [])
     
-    let [tokenClient, setTokenClient] = useState()
-    let [accessToken, setAccessToken] = useState(null)
-    let [pickerInited, setPickerInited] = useState(false)
-    let [gisInited, setGisInited] = useState(false)
+    const [pickerInited, setPickerInited] = useState(false)
+    const [gisInited, setGisInited] = useState(false)
 
-    
+    const accessToken = useRef(null)
+    const tokenClient = useRef()
+
     const SCOPES = credentials.scopes
     
     const CLIENT_ID = credentials.clientId
@@ -47,8 +47,6 @@ export default function GoogleUploadButton() {
     
     const APP_ID = credentials.appId
 
-    const REDIRECT_URL = 'http://localhost:3000'
-    
     
     function onApiLoad() {
         gapi.load('client:picker', onPickerApiLoad)
@@ -66,7 +64,7 @@ export default function GoogleUploadButton() {
             callback: '',
         })
 
-        setTokenClient(token)
+        tokenClient.current = token
         setGisInited(true)
     }
     
@@ -75,13 +73,14 @@ export default function GoogleUploadButton() {
         view.setMimeTypes('image/png,image/jpeg,image/jpg')
         const picker = new google.picker.PickerBuilder()
             .enableFeature(google.picker.Feature.NAV_HIDDEN)
-            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            // .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
             .setDeveloperKey(API_KEY)
             .setAppId(APP_ID)
-            .setOAuthToken(accessToken)
+            .setOAuthToken(accessToken.current)
             .addView(view)
-            .addView(new google.picker.DocsUploadView())
+            // .addView(new google.picker.DocsUploadView())
             .setCallback(pickerCallback)
+            .setOrigin(window.location.protocol + '//' + window.location.host)
             .setRelayUrl(window.location.host)
             .build()
         picker.setVisible(true)
@@ -103,30 +102,30 @@ export default function GoogleUploadButton() {
     }
     
     async function handleAuthClick() {
-        tokenClient.callback = async (response) => {
+        tokenClient.current.callback = async (response) => {
             if (response.error !== undefined) {
                 throw (response)
             }
-    
-            setAccessToken(response.access_token)
+
+            accessToken.current = response.access_token
             await createPicker()
         }
     
-        if (accessToken === null) {
+        if (accessToken.current === null) {
             // Prompt the user to select a Google Account and ask for consent to share their data
             // when establishing a new session.
-            tokenClient.requestAccessToken({prompt: 'consent'})
+            tokenClient.current.requestAccessToken({prompt: 'consent'})
         }
         
         else {
             // Skip display of account chooser and consent dialog for an existing session.
-            tokenClient.requestAccessToken({prompt: ''})
+            tokenClient.current.requestAccessToken({prompt: ''})
         }
     }
 
     return (
         <>
-            { (gisInited && pickerInited) && <button onClick={handleAuthClick}>Upload</button> }
+            { (gisInited && pickerInited) && <button onClick={ handleAuthClick }>Upload</button> }
         </>
     )
 }
