@@ -10,7 +10,8 @@
     "dependencies": {
         "axios": "^1.7.8",
         "react": "^18.3.1",
-        "react-dom": "^18.3.1"
+        "react-dom": "^18.3.1",
+        "react-google-drive-picker": "^1.2.2"
     },
     "scripts": {
         "start": "react-scripts start",
