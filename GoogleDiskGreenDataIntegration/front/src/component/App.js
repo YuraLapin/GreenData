@@ -41,7 +41,7 @@ export default function App() {
                     </div>
                 )
             }) }
-            { token.length > 0 && <button onClick={logOut}>Log out</button> }
+            { token && token.length > 0 && <button onClick={logOut}>Log out</button> }
         </>
     )
 }
