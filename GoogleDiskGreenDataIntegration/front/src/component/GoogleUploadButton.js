@@ -43,9 +43,11 @@ export default function GoogleUploadButton(props) {
 
     useEffect(() => {
         if (pickedFiles && pickedFiles.length > 0) {
-            axios.post('/api/upload', {
-                token: props.tocken,
-                fileId: pickedFiles[0].id,
+            axios.post('/api/upload', null, {
+                params: {
+                    fileId: pickedFiles[0].id,
+                    accessToken: localStorage.getItem("token"),
+                }
             })
         }
     }, [pickedFiles])
