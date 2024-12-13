@@ -32,11 +32,10 @@ export default function App() {
             <GoogleUploadButton  tocken={token} setTocken={setToken}/>
             { greenDataFiles.map(file => {
                 return (
-                    <div key={file.id}>
+                    <div key={file.path}>
                         <p>
                             <span>{ file.name } | </span>
-                            <span>id = { file.id } </span>
-                            <GoogleDownloadButton tocken={token} setTocken={setToken} id={file.id} />
+                            <GoogleDownloadButton tocken={token} setTocken={setToken} path={file.path} />
                         </p>
                     </div>
                 )

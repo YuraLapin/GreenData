@@ -1,5 +1,6 @@
 package com.example.GoogleDiskGreenDataIntegration.controller;
 
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -7,6 +8,8 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.services.drive.Drive;
 
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -15,10 +18,12 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-
+import com.google.api.services.drive.model.File;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 
@@ -52,7 +57,7 @@ public class GoogleDriveController {
 
             request.executeMediaAndDownloadTo(outputStream);
 
-            File localFile = new File(DOWNLOAD_DIR + "\\" + file.getName());
+            java.io.File localFile = new java.io.File(DOWNLOAD_DIR + "\\" + file.getName());
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(localFile)) {
                 outputStream.writeTo(fileOutputStream);
@@ -62,6 +67,43 @@ public class GoogleDriveController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Ошибка скачивания файла: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/download")
+    public ResponseEntity<String> uploadFile(@RequestParam String filePath, @RequestParam String accessToken) {
+        try {
+            // Настройка Google Drive API
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("F:/CRED/credentials.json"))
+                    .createScoped(Arrays.asList(DriveScopes.DRIVE_FILE));
+            HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+
+
+            Drive driveService = new Drive.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
+                    .setApplicationName("GoogleDriveUploader")
+                    .build();
+
+            // Создание метаданных файла
+            com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
+            fileMetadata.setName(Paths.get(filePath).getFileName().toString());
+
+            // Загрузка файла
+            java.io.File filePathToUpload = new java.io.File(filePath);
+            FileContent mediaContent = new FileContent(Files.probeContentType(filePathToUpload.toPath()), filePathToUpload);
+
+            // Выполнение загрузки файла
+            com.google.api.services.drive.model.File uploadedFile  = driveService.files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute();
+
+            return ResponseEntity.ok("Файл загружен на Google Диск с ID: " + uploadedFile .getId());
+        } catch (GoogleJsonResponseException e) {
+            System.err.println("Ошибка загрузки файла: " + e.getDetails());
+            return ResponseEntity.status(400).body("Ошибка загрузки файла: " + e.getDetails());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Ошибка загрузки файла: " + e.getMessage());
         }
     }
 }
