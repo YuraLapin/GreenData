@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class LoadedFilesController {
-    private final String DOWNLOAD_DIR = "F:\\TEST"; // Путь к папке с файлами
+    private final String DOWNLOAD_DIR = "C:/TEST"; // Путь к папке с файлами
     private List<LoadedFile> loadedFiles;
 
     public LoadedFilesController() {
@@ -32,6 +32,7 @@ public class LoadedFilesController {
             }
         }
     }
+
     @GetMapping("/files")
     public List<LoadedFile> getAllFiles() {
         return loadedFiles;

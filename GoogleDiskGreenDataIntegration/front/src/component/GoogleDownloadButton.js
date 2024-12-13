@@ -45,19 +45,21 @@ export default function GoogleUploadButton(props) {
 
     useEffect(() => {
         if (pickedFolders && pickedFolders.length > 0) {
-             axios.post('/api/download', {
-                            token: props.token,
-                            folderId: pickedFolders[0].id,
-                            filePath: props.filePath, // Передаем путь к файлу
-                        })
-                        .then(response => {
-                            console.log("Файл загружен на Google Диск:", response.data);
-                            alert("Файл успешно загружен на Google Диск!");
-                        })
-                        .catch(error => {
-                            console.error("Ошибка при загрузке файла:", error);
-                            alert("Ошибка при загрузке файла: " + error.message);
-                        });
+            axios.post('/api/download', null, {
+                params: {
+                    accessToken: props.token,
+                    folderId: pickedFolders[0].id,
+                    filePath: props.filePath, // Передаем путь к файлу
+                },
+            })
+            .then(response => {
+                console.log("Файл загружен на Google Диск:", response.data)
+                alert("Файл успешно загружен на Google Диск!")
+            })
+            .catch(error => {
+                console.error("Ошибка при загрузке файла:", error)
+                alert("Ошибка при загрузке файла: " + error.message)
+            })
         }
     }, [pickedFolders])
 

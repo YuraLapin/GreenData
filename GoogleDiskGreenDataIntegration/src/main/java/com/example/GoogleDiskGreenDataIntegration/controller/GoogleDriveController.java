@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 import java.io.*;
@@ -35,7 +36,8 @@ import java.io.*;
 @RequestMapping("/api")
 public class GoogleDriveController {
 
-    private final String DOWNLOAD_DIR = "F:\\TEST";
+    private final String DOWNLOAD_DIR = "C:/TEST";
+    private final String CREDENTIALS_PATH = "C:/CRED/credentials.json";
 
     @PostMapping("/upload")
     public ResponseEntity<String> downloadFile(@RequestParam String fileId, @RequestParam String accessToken) {
@@ -71,14 +73,13 @@ public class GoogleDriveController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<String> uploadFile(@RequestParam String filePath, @RequestParam String accessToken) {
+    public ResponseEntity<String> uploadFile(@RequestParam String accessToken, @RequestParam String folderId, @RequestParam String filePath) {
         try {
             // Настройка Google Drive API
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("F:/CRED/credentials.json"))
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(CREDENTIALS_PATH))
                     .createScoped(Arrays.asList(DriveScopes.DRIVE_FILE));
             HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
-
 
             Drive driveService = new Drive.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
                     .setApplicationName("GoogleDriveUploader")
@@ -87,17 +88,21 @@ public class GoogleDriveController {
             // Создание метаданных файла
             com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
             fileMetadata.setName(Paths.get(filePath).getFileName().toString());
+            fileMetadata.setParents(java.util.Collections.singletonList(folderId));
 
             // Загрузка файла
             java.io.File filePathToUpload = new java.io.File(filePath);
-            FileContent mediaContent = new FileContent(Files.probeContentType(filePathToUpload.toPath()), filePathToUpload);
+            String mimeType = Files.probeContentType(filePathToUpload.toPath()); // Определяем MIME-тип файла
+            FileContent mediaContent = new FileContent(mimeType, filePathToUpload);
 
-            // Выполнение загрузки файла
-            com.google.api.services.drive.model.File uploadedFile  = driveService.files().create(fileMetadata, mediaContent)
+            // Выполнение загрузки файла с указанием uploadType=media
+            com.google.api.services.drive.model.File uploadedFile = driveService.files().create(fileMetadata, mediaContent)
                     .setFields("id")
+                    .set("uploadType", "media") // Устанавливаем uploadType
+                    .set("supportsAllDrives", true)
                     .execute();
 
-            return ResponseEntity.ok("Файл загружен на Google Диск с ID: " + uploadedFile .getId());
+            return ResponseEntity.ok("Файл загружен на Google Диск с ID: " + uploadedFile.getId());
         } catch (GoogleJsonResponseException e) {
             System.err.println("Ошибка загрузки файла: " + e.getDetails());
             return ResponseEntity.status(400).body("Ошибка загрузки файла: " + e.getDetails());
