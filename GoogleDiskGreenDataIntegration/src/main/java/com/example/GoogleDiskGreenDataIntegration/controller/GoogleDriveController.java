@@ -76,12 +76,20 @@ public class GoogleDriveController {
     public ResponseEntity<String> uploadFile(@RequestParam String accessToken, @RequestParam String folderId, @RequestParam String filePath) {
         try {
             // Настройка Google Drive API
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(CREDENTIALS_PATH))
-                    .createScoped(Arrays.asList(DriveScopes.DRIVE_FILE));
-            HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
+            // JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            // GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(CREDENTIALS_PATH))
+            //         .createScoped(Arrays.asList(DriveScopes.DRIVE_FILE));
+            // HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
 
-            Drive driveService = new Drive.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
+            // Drive driveService = new Drive.Builder(new NetHttpTransport(), jsonFactory, requestInitializer)
+            //         .setApplicationName("GoogleDriveUploader")
+            //         .build();
+
+            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+
+            Drive driveService = new Drive.Builder(transport, jsonFactory, credential)
                     .setApplicationName("GoogleDriveUploader")
                     .build();
 

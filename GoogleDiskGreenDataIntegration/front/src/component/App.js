@@ -35,7 +35,7 @@ export default function App() {
                     <div key={file.path}>
                         <p>
                             <span>{ file.name } | </span>
-                            <GoogleDownloadButton token={token} setTocken={setToken} filePath={file.path} />
+                            <GoogleDownloadButton token={token} setToken={setToken} filePath={file.path} />
                         </p>
                     </div>
                 )

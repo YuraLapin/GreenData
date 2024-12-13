@@ -22,7 +22,7 @@ export default function GoogleUploadButton(props) {
             developerKey: API_KEY,
             appId: APP_ID,
             scopes: SCOPES,
-            token: props.tocken,
+            token: props.token,
             viewId: 'FOLDERS',
             setSelectFolderEnabled: true,
             setIncludeFolders: true,
@@ -38,7 +38,7 @@ export default function GoogleUploadButton(props) {
 
     useEffect(() => {
         if (authResponse) {
-            props.setTocken(authResponse.access_token)
+            props.setToken(authResponse.access_token)
             localStorage.setItem('token', authResponse.access_token)
         }
     }, [authResponse])
