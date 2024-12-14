@@ -5,9 +5,10 @@
     "license": "MIT",
     "devDependencies": {
         "prettier": "^3.3.3",
-        "react-scripts": "^3.0.1"
+        "react-scripts": "^5.0.1"
     },
     "dependencies": {
+        "@react-oauth/google": "^0.12.1",
         "axios": "^1.7.8",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",

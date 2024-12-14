@@ -90,7 +90,7 @@ public class GoogleDriveController {
             GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
 
             Drive driveService = new Drive.Builder(transport, jsonFactory, credential)
-                    .setApplicationName("GoogleDriveUploader")
+                    .setApplicationName("GoogleDriveDownloader")
                     .build();
 
             // Создание метаданных файла

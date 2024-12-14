@@ -1,11 +1,14 @@
 import axios from 'axios'
 import React from 'react'
 import { useEffect, useState } from 'react'
-import credentials from '../credentials.js'
+
+import { useGoogleLogin } from '@react-oauth/google'
 import useDrivePicker from 'react-google-drive-picker'
 
-export default function GoogleUploadButton(props) {
+import credentials from '../credentials.js'
 
+
+export default function GoogleUploadButton(props) {
     const [openPicker, authResponse] = useDrivePicker()
     const [pickedFiles, setFiles] = useState([])
 
@@ -16,13 +19,31 @@ export default function GoogleUploadButton(props) {
     
     const APP_ID = credentials.appId
 
+    const login = useGoogleLogin({
+        onSuccess: tokenResponse => {
+            props.setToken(tokenResponse.access_token)
+            localStorage.setItem('token', tokenResponse.access_token)
+            showPicker(tokenResponse.access_token)
+        },
+        scope: SCOPES,
+    })
+
     function handleAuthClick() {
+        if (props.token && props.token.length > 0) {
+            showPicker(props.token)
+        }
+        else {
+            login()
+        }
+    }
+
+    function showPicker(token) {
         openPicker({
             clientId: CLIENT_ID,
             developerKey: API_KEY,
             appId: APP_ID,
             scopes: SCOPES,
-            token: props.tocken,
+            token: token,
             setIncludeFolders: true,
             setParentFolder: 'root',
             callbackFunction: (data) => {
@@ -35,18 +56,11 @@ export default function GoogleUploadButton(props) {
     }
 
     useEffect(() => {
-        if (authResponse) {
-            props.setTocken(authResponse.access_token)
-            localStorage.setItem('token', authResponse.access_token)
-        }
-    }, [authResponse])
-
-    useEffect(() => {
-        if (pickedFiles && pickedFiles.length > 0) {
+        if (props.token && pickedFiles && pickedFiles.length > 0) {
             axios.post('/api/upload', null, {
                 params: {
                     fileId: pickedFiles[0].id,
-                    accessToken: localStorage.getItem("token"),
+                    accessToken: props.token,
                 }
             })
         }

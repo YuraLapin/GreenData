@@ -1,11 +1,16 @@
 import axios from 'axios'
 import React from 'react'
 import { useState, useEffect } from 'react'
+
+import { GoogleOAuthProvider } from '@react-oauth/google'
+
+import credentials from '../credentials.js'
+
 import GoogleUploadButton from './GoogleUploadButton'
 import GoogleDownloadButton from './GoogleDownloadButton'
 
-export default function App() {
 
+export default function App() {
     const [greenDataFiles, setGreenDataFiles] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token'))
 
@@ -28,8 +33,8 @@ export default function App() {
     }
 
     return (
-        <>
-            <GoogleUploadButton  tocken={token} setTocken={setToken}/>
+        <GoogleOAuthProvider clientId={credentials.clientId}>
+            <GoogleUploadButton  token={token} setToken={setToken}/>
             { greenDataFiles.map(file => {
                 return (
                     <div key={file.path}>
@@ -41,6 +46,6 @@ export default function App() {
                 )
             }) }
             { token && token.length > 0 && <button onClick={logOut}>Log out</button> }
-        </>
+        </GoogleOAuthProvider>
     )
 }
