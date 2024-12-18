@@ -62,6 +62,8 @@ export default function GoogleUploadButton(props) {
                     fileId: pickedFiles[0].id,
                     accessToken: props.token,
                 }
+            }).then(async () => {
+                await props.fetchFiles()
             })
         }
     }, [pickedFiles])

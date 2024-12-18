@@ -14,27 +14,27 @@ export default function App() {
     const [greenDataFiles, setGreenDataFiles] = useState([]);
     const [token, setToken] = useState(localStorage.getItem('token'))
 
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await axios.get('/api/files')
-                setGreenDataFiles(response.data)
-            } catch (error) {
-                console.error("Ошибка при получении файлов: ", error)
-            }
-        };
-
-        fetchFiles();
-    }, [])
+    async function fetchFiles() {
+        try {
+            const response = await axios.get('/api/files')
+            setGreenDataFiles(response.data)
+        } catch (error) {
+            console.error("Ошибка при получении файлов: ", error)
+        }
+    }
 
     function logOut() {
         localStorage.setItem('token', '')
         setToken('')
     }
 
+    useEffect(() => {
+        fetchFiles()
+    }, [])
+
     return (
         <GoogleOAuthProvider clientId={credentials.clientId}>
-            <GoogleUploadButton  token={token} setToken={setToken}/>
+            <GoogleUploadButton  token={token} setToken={setToken} fetchFiles={fetchFiles} />
             { greenDataFiles.map(file => {
                 return (
                     <div key={file.path}>

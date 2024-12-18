@@ -21,6 +21,7 @@ public class LoadedFilesController {
     }
 
     private void loadFilesFromDirectory() {
+        loadedFiles = new ArrayList<>();
         File directory = new File(DOWNLOAD_DIR);
         File[] files = directory.listFiles();
 
@@ -35,6 +36,7 @@ public class LoadedFilesController {
 
     @GetMapping("/files")
     public List<LoadedFile> getAllFiles() {
+        loadFilesFromDirectory();
         return loadedFiles;
     }
 }
