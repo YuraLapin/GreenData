@@ -1,0 +1,73 @@
+body {
+    background-color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 400;
+}
+
+button {
+    background-color: #1db577;
+    border: none;
+    border-radius: 10px;
+    height: 22px;
+    color: #ffffff;
+}
+
+button.log-out-button {
+    width: 75px;
+    margin-top: 5px;
+}
+
+div.outer-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+div.group-wrapper {
+    background-color: #ffffff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+div.settings-wrapper {
+    width: 310px;
+    padding-bottom: 10px;
+    height: 62px;
+}
+
+    div.settings-wrapper div {
+        display: flex;
+        flex-direction: row;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+
+    div.settings-wrapper input[type='checkbox'] {
+        accent-color: #1db577;
+        color: #ffffff;
+    }
+
+div.files-wrapper {
+    width: 400px;
+    margin-left: 20px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    max-height: 96vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+    div.files-wrapper table {
+        width: 390px;
+        border-spacing: 0 5px;
+    }
+
+    div.files-wrapper table tr {
+        height: 26px;
+    }
+
+    div.files-wrapper table tr td:first-child {
+        width: 300px;
+    }

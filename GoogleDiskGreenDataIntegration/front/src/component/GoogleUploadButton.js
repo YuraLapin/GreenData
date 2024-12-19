@@ -7,6 +7,8 @@ import useDrivePicker from 'react-google-drive-picker'
 
 import credentials from '../credentials.js'
 
+import './GoogleUploadButton.css'
+
 
 export default function GoogleUploadButton(props) {
     const [openPicker, authResponse] = useDrivePicker()
@@ -70,7 +72,7 @@ export default function GoogleUploadButton(props) {
 
     return (
         <>
-            <button onClick={handleAuthClick}>Upload</button>
+            <button className="upload-button" onClick={handleAuthClick}>Загрузить</button>
         </>
     )
 }
